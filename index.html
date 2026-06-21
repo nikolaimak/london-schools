@@ -609,6 +609,16 @@
             document.getElementById('map').style.cursor = '';
             setOrigin(e.latlng.lat, e.latlng.lng);
             map.closePopup();
+            // Reverse geocode to postcode
+            fetch('https://api.postcodes.io/postcodes?lon=' + e.latlng.lng + '&lat=' + e.latlng.lat + '&limit=1')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.result && d.result.length > 0) {
+                        var pc = d.result[0].postcode;
+                        document.getElementById('postcode-input').value = pc;
+                        try { localStorage.setItem('schools-map-postcode', pc); } catch(ex) {}
+                    }
+                }).catch(function(){});
         });
 
         // Postcode geocoding
