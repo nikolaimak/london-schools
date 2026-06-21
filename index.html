@@ -488,7 +488,7 @@
                     const d = msoPrices[code];
                     if (d) {
                         const conf = d.n < 5 ? ' ⚠️ low data' : '';
-                        layer.bindTooltip(d.nm + ': £' + (d.p/1000).toFixed(0) + 'k (' + d.n + ' sales)' + conf, {sticky: true});
+                        layer.bindPopup('<b>' + d.nm + '</b><br>£' + d.p.toLocaleString() + ' median<br>' + d.n + ' sales' + (d.n < 5 ? '<br>⚠️ low data' : ''));
                     }
                 }
             }).addTo(map);
