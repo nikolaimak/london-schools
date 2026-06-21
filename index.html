@@ -597,19 +597,18 @@
             this.style.background = pickMode ? '#2980b9' : 'white';
             this.style.color = pickMode ? 'white' : '#2980b9';
             document.getElementById('map').style.cursor = pickMode ? 'crosshair' : '';
-            if (priceLayer) {
-                priceLayer.setStyle({interactive: !pickMode});
-            }
+            
         });
 
-        // Map click in pick mode only
-        map.on('click', function(e) {
+        // Map click in pick mode - use preclick which fires before layer events
+        map.on('preclick', function(e) {
             if (!pickMode) return;
             pickMode = false;
             var btn = document.getElementById('pick-origin-btn');
             btn.style.background = 'white'; btn.style.color = '#2980b9';
             document.getElementById('map').style.cursor = '';
             setOrigin(e.latlng.lat, e.latlng.lng);
+            map.closePopup();
         });
 
         // Postcode geocoding
