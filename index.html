@@ -597,6 +597,9 @@
             this.style.background = pickMode ? '#2980b9' : 'white';
             this.style.color = pickMode ? 'white' : '#2980b9';
             document.getElementById('map').style.cursor = pickMode ? 'crosshair' : '';
+            if (priceLayer) {
+                priceLayer.setStyle({interactive: !pickMode});
+            }
         });
 
         // Map click in pick mode only
@@ -628,6 +631,7 @@
             const loc = await geocodePostcode(pc);
             if (loc) {
                 setOrigin(loc.lat, loc.lng);
+                try { localStorage.setItem('schools-map-postcode', pc); } catch(e) {}
                 map.setView([loc.lat, loc.lng], 12);
             } else {
                 statusEl.textContent = '❌ Postcode not found';
@@ -652,6 +656,7 @@
             saveFilters();
         });
         // === INIT (must be after all data + handlers) ===
+        try { var savedPC = localStorage.getItem('schools-map-postcode'); if (savedPC) document.getElementById('postcode-input').value = savedPC; } catch(e) {}
         // One-time reset for broken localStorage from v1
         if (!localStorage.getItem('schools-map-v2')) {
             localStorage.removeItem(STORAGE_KEY);
