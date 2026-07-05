@@ -133,6 +133,13 @@
                 </div>
             </div>
             <div class="filter-group">
+                <div class="filter-group-title">Location</div>
+                <div class="btn-row">
+                    <button class="filter-btn active" data-group="location" data-value="london" style="--c:#c0392b;--bg:#fde8e8;--tc:#922b21;">London</button>
+                    <button class="filter-btn active" data-group="location" data-value="outside" style="--c:#7f8c8d;--bg:#ecf0f1;--tc:#2c3e50;">Outside London</button>
+                </div>
+            </div>
+            <div class="filter-group">
                 <div class="filter-group-title">Extra filters</div>
                 <div class="btn-row">
                     <button class="filter-btn" id="f-top80" style="--c:#d35400;--bg:#fdebd0;--tc:#9c640c;">Top 80 only</button>
@@ -168,10 +175,10 @@
 
             <h5>Completeness</h5>
             <ul>
-                <li><strong>Grammar:</strong> Complete - all 19 London grammar schools per <a href="https://www.legislation.gov.uk/uksi/1998/2219/contents/made" target="_blank">statutory designation</a>.</li>
+                <li><strong>Grammar:</strong> Complete - all 19 London grammar schools per <a href="https://www.legislation.gov.uk/uksi/1998/2219/contents/made" target="_blank">statutory designation</a>, plus top-80 grammars outside London.</li>
                 <li><strong>Semi-selective:</strong> All from the <a href="https://en.wikipedia.org/wiki/Partially_selective_school_(England)" target="_blank">statutory list</a> (pre-1997 arrangements preserved by law) + well-known aptitude selectors. Not every academy with a 10% aptitude band is listed - there are dozens more.</li>
-                <li><strong>Non-selective:</strong> Only those that made the Oxbridge Top 80.</li>
-                <li><strong>Independent:</strong> Only those in the Oxbridge Top 80. Many more exist.</li>
+                <li><strong>Non-selective:</strong> Only those that made the Oxbridge Top 80 (London and outside).</li>
+                <li><strong>Independent:</strong> Only those in the Oxbridge Top 80. Many more exist. Use the <strong>Outside London</strong> filter to show/hide schools outside the M25.</li>
             </ul>
 
             <h5>Entry points</h5>
@@ -266,6 +273,45 @@
             { name: "Trinity School, Croydon", type: "independent", gender: "coed", top80: true, free: false, entry: "11+, 13+, 16+", rank: 69, offers: 15, pct: "33%", fee: 30468, lat: 51.3650, lng: -0.0830 },
             { name: "Harrow School", type: "independent", gender: "boys", top80: true, free: false, entry: "13+, 16+", rank: 71, offers: 15, pct: "19%", fee: 63735, lat: 51.5720, lng: -0.3360, note: "Boarding only" },
             { name: "UCS Hampstead", type: "independent", gender: "boys", top80: true, free: false, entry: "11+, 16+", rank: 72, offers: 15, pct: "19%", fee: 32913, lat: 51.5560, lng: -0.1770, note: "Co-ed 6th form" },
+            // === OUTSIDE LONDON - INDEPENDENT - TOP 80 ===
+            { name: "Eton College", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "13+, 16+", rank: 2, offers: 65, pct: "33%", fee: 52749, lat: 51.4916, lng: -0.6089, note: "Boarding only" },
+            { name: "Winchester College", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "13+, 16+", rank: 3, offers: 57, pct: "40%", fee: 47025, lat: 51.0609, lng: -1.3112, note: "Boarding only" },
+            { name: "Wycombe Abbey", type: "independent", gender: "girls", top80: true, free: false, london: false, entry: "11+, 13+, 16+", rank: 5, offers: 52, pct: "38%", fee: 45435, lat: 51.6274, lng: -0.7490, note: "Boarding" },
+            { name: "Magdalen College School", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "11+, 16+", rank: 6, offers: 50, pct: "40%", fee: 24234, lat: 51.7543, lng: -1.2492 },
+            { name: "Tonbridge School", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "13+, 16+", rank: 7, offers: 49, pct: "35%", fee: 47817, lat: 51.1932, lng: 0.2821, note: "Boarding" },
+            { name: "Rugby School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "13+, 16+", rank: 8, offers: 48, pct: "29%", fee: 46452, lat: 52.3712, lng: -1.2628, note: "Boarding" },
+            { name: "Charterhouse", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "13+, 16+", rank: 12, offers: 41, pct: "32%", fee: 51540, lat: 51.1864, lng: -0.5927, note: "Boarding" },
+            { name: "Cheltenham Ladies' College", type: "independent", gender: "girls", top80: true, free: false, london: false, entry: "11+, 13+, 16+", rank: 13, offers: 40, pct: "37%", fee: 43800, lat: 51.8992, lng: -2.0667, note: "Boarding" },
+            { name: "Radley College", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "13+, 16+", rank: 14, offers: 36, pct: "30%", fee: 50520, lat: 51.6650, lng: -1.2714, note: "Boarding only" },
+            { name: "The Perse School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "11+, 16+", rank: 17, offers: 35, pct: "31%", fee: 22050, lat: 52.1897, lng: 0.1273 },
+            { name: "St Albans School", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "11+, 16+", rank: 21, offers: 30, pct: "26%", fee: 26256, lat: 51.7516, lng: -0.3397, note: "Co-ed 6th form" },
+            { name: "Guildford High School", type: "independent", gender: "girls", top80: true, free: false, london: false, entry: "11+, 16+", rank: 22, offers: 29, pct: "31%", fee: 23298, lat: 51.2437, lng: -0.5731 },
+            { name: "Merchant Taylors' School", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "11+, 13+, 16+", rank: 24, offers: 28, pct: "25%", fee: 25440, lat: 51.5896, lng: -0.4277 },
+            { name: "Abingdon School", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "11+, 13+, 16+", rank: 25, offers: 27, pct: "23%", fee: 24795, lat: 51.6769, lng: -1.2831 },
+            { name: "Sevenoaks School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "11+, 13+, 16+", rank: 26, offers: 27, pct: "19%", fee: 30372, lat: 51.2714, lng: 0.1872 },
+            { name: "Royal Grammar School, Guildford", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "11+, 16+", rank: 27, offers: 26, pct: "25%", fee: 22113, lat: 51.2421, lng: -0.5705 },
+            { name: "Berkhamsted School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "11+, 13+, 16+", rank: 29, offers: 25, pct: "19%", fee: 25032, lat: 51.7614, lng: -0.5645 },
+            { name: "Bancroft's School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "11+, 16+", rank: 30, offers: 25, pct: "26%", fee: 21966, lat: 51.6076, lng: 0.0351 },
+            { name: "Bradford Grammar School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "11+, 16+", rank: 36, offers: 23, pct: "20%", fee: 16764, lat: 53.7998, lng: -1.7668 },
+            { name: "Oundle School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "11+, 13+, 16+", rank: 38, offers: 23, pct: "16%", fee: 46665, lat: 52.4728, lng: -0.4759, note: "Boarding" },
+            { name: "Manchester Grammar School", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "11+, 16+", rank: 40, offers: 23, pct: "20%", fee: 14976, lat: 53.4454, lng: -2.2346 },
+            { name: "Haberdashers' Girls' School", type: "independent", gender: "girls", top80: true, free: false, london: false, entry: "11+, 16+", rank: 43, offers: 22, pct: "29%", fee: 23166, lat: 51.6551, lng: -0.2801 },
+            { name: "King Edward's School, Birmingham", type: "independent", gender: "boys", top80: true, free: false, london: false, entry: "11+, 16+", rank: 44, offers: 21, pct: "23%", fee: 14904, lat: 52.4499, lng: -1.9010 },
+            { name: "Oxford High School GDST", type: "independent", gender: "girls", top80: true, free: false, london: false, entry: "11+, 16+", rank: 47, offers: 21, pct: "24%", fee: 18180, lat: 51.7596, lng: -1.2622 },
+            { name: "Surbiton High School", type: "independent", gender: "girls", top80: true, free: false, london: false, entry: "11+, 16+", rank: 50, offers: 20, pct: "24%", fee: 22995, lat: 51.3895, lng: -0.3050 },
+            { name: "Shrewsbury School", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "13+, 16+", rank: 55, offers: 19, pct: "18%", fee: 46113, lat: 52.7076, lng: -2.7406, note: "Boarding" },
+            { name: "Malvern College", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "13+, 16+", rank: 57, offers: 19, pct: "14%", fee: 46050, lat: 52.1160, lng: -2.3218, note: "Boarding" },
+            { name: "GSAL (Grammar School at Leeds)", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "11+, 16+", rank: 58, offers: 19, pct: "16%", fee: 16050, lat: 53.8372, lng: -1.5807 },
+            { name: "King's School, Canterbury", type: "independent", gender: "coed", top80: true, free: false, london: false, entry: "13+, 16+", rank: 62, offers: 17, pct: "15%", fee: 48480, lat: 51.2826, lng: 1.0797, note: "Boarding" },
+            // === OUTSIDE LONDON - GRAMMAR - TOP 80 ===
+            { name: "KEGS (King Edward VI Grammar)", type: "grammar", gender: "boys", top80: true, free: true, london: false, entry: "11+, 16+", rank: 32, offers: 24, pct: "27%", lat: 51.7349, lng: 0.4733 },
+            { name: "St Albans Girls' School", type: "grammar", gender: "girls", top80: true, free: true, london: false, entry: "11+, 16+", rank: 33, offers: 24, pct: "26%", lat: 51.7538, lng: -0.3388 },
+            { name: "Reading School", type: "grammar", gender: "boys", top80: true, free: true, london: false, entry: "11+, 16+", rank: 34, offers: 24, pct: "23%", lat: 51.4590, lng: -0.9580 },
+            { name: "Colchester Royal Grammar School", type: "grammar", gender: "boys", top80: true, free: true, london: false, entry: "11+, 16+", rank: 35, offers: 24, pct: "22%", lat: 51.8954, lng: 0.8997 },
+            { name: "The Skinners' School", type: "grammar", gender: "boys", top80: true, free: true, london: false, entry: "11+, 16+", rank: 51, offers: 20, pct: "22%", lat: 51.1398, lng: 0.2598 },
+            { name: "King Edward VI Five Ways School", type: "grammar", gender: "boys", top80: true, free: true, london: false, entry: "11+, 16+", rank: 56, offers: 19, pct: "20%", lat: 52.4356, lng: -1.9498 },
+            // === OUTSIDE LONDON - STATE - TOP 80 ===
+            { name: "Peter Symonds College", type: "state", gender: "coed", top80: true, free: true, london: false, entry: "16+", rank: 63, offers: 17, pct: "7%", lat: 51.0584, lng: -1.3193 },
             // === GRAMMAR - NOT TOP 80 ===
             { name: "Newstead Wood School", type: "grammar", gender: "girls", top80: false, free: true, entry: "11+, 16+", lat: 51.367, lng: 0.077, note: "Co-ed 6th form" },
             { name: "Bexley Grammar School", type: "grammar", gender: "coed", top80: false, free: true, entry: "11+, 16+", lat: 51.4564, lng: 0.1084 },
@@ -322,11 +368,13 @@
         function getVisibleSchools() {
             const genderFilter = getActiveFilters('gender');
             const typeFilter = getActiveFilters('type');
+            const locationFilter = getActiveFilters('location');
             const top80Only = document.getElementById('f-top80').classList.contains('active');
             const freeOnly = document.getElementById('f-free').classList.contains('active');
             return schools.map((s, i) => ({ ...s, _idx: i })).filter(s => {
                 if (!genderFilter.includes(s.gender)) return false;
                 if (!typeFilter.includes(s.type)) return false;
+                if (!locationFilter.includes(s.london === false ? 'outside' : 'london')) return false;
                 if (top80Only && !s.top80) return false;
                 if (freeOnly && !s.free) return false;
                 return true;
@@ -384,6 +432,7 @@
             const state = {
                 gender: getActiveFilters('gender'),
                 type: getActiveFilters('type'),
+                location: getActiveFilters('location'),
                 top80: document.getElementById('f-top80').classList.contains('active'),
                 free: document.getElementById('f-free').classList.contains('active'),
                 prices: document.getElementById('f-prices').classList.contains('active'),
