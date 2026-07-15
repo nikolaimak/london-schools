@@ -180,13 +180,16 @@
             <h5>Map layers (experimental)</h5>
             <ul>
                 <li><strong>£ Prices</strong> — median sale prices by MSOA (Middle Layer Super Output Area, ~7000 people each). Calculated from <a href="https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads" target="_blank">Land Registry Price Paid</a> transactions Jan 2025 – Jun 2026 (132k sales). Faded areas = fewer than 5 sales (low confidence). Hover for details.</li>
-                <li><strong>🚇 Commute</strong> — tap the map to set origin, then <a href="https://api.tfl.gov.uk/" target="_blank">TfL Journey Planner API</a> calculates real public transport times to each school. Green ring = short, red = long.</li>
+                <li><strong>🚇/🚗 Commute</strong> — tap the map to set origin, then choose public transport (TfL Journey Planner) or car (OSRM routing) to estimate times to each school. Green ring = short, red = long.</li>
             </ul>
         </div>
     </div>
     <div id="bottom-panel">
         <div id="commute-controls" style="display:none; padding: 6px 12px; font-size: 12px; background: #eaf2fa; border-bottom: 1px solid #d4e6f1; display: none;">
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="color:#666; font-size:10px;">Mode:</span>
+                <button id="mode-public-btn" style="padding:4px 8px; border-radius:4px; border:1.5px solid #2980b9; background:#2980b9; color:white; font-size:11px; cursor:pointer; font-weight:600;">🚇 Public transport</button>
+                <button id="mode-car-btn" style="padding:4px 8px; border-radius:4px; border:1.5px solid #2980b9; background:white; color:#2980b9; font-size:11px; cursor:pointer; font-weight:600;">🚗 Car</button>
                 <button id="pick-origin-btn" style="padding:4px 10px; border-radius:4px; border:1.5px solid #2980b9; background:white; font-size:11px; cursor:pointer; color:#2980b9; font-weight:600;">📍 Pick on map</button>
                 <span style="color:#888; font-size:10px;">or</span>
                 <input id="postcode-input" type="text" placeholder="Postcode (e.g. W2 6BD)" style="padding:4px 8px; border:1.5px solid #ccc; border-radius:4px; font-size:11px; width:140px;" />
@@ -205,7 +208,7 @@
             <span class="legend-item" style="color:#aaa">● larger = Top 80</span>
         </div>
         <div class="legend-row" id="commute-legend" style="display:none">
-            <span class="legend-item">🚇 Commute from origin:</span>
+            <span class="legend-item" id="commute-legend-title">🚇 Public transport from origin:</span>
             <span class="legend-item"><span class="legend-dot" style="background:rgb(0,255,30)"></span>&le;15 min</span>
             <span class="legend-item"><span class="legend-dot" style="background:rgb(128,255,30)"></span>20 min</span>
             <span class="legend-item"><span class="legend-dot" style="background:rgb(255,255,30)"></span>30 min</span>
@@ -355,7 +358,7 @@
                     if (s.fee) ph += '<p class="fee">£' + s.fee.toLocaleString() + '/year</p>';
                     if (s.entry) ph += '<p class="entry">Entry: ' + s.entry + '</p>';
                     var cm = schoolCommute[s.name];
-                    if (cm) ph += '<p><strong>🚇 Commute:</strong> ' + cm + ' min</p>';
+                    if (cm) ph += '<p><strong>' + (commuteMode === 'car' ? '🚗 Car' : '🚇 Public transport') + ':</strong> ' + cm + ' min</p>';
                     ph += '</div>';
                     marker.bindPopup(ph).openPopup();
                 });
@@ -387,7 +390,8 @@
                 top80: document.getElementById('f-top80').classList.contains('active'),
                 free: document.getElementById('f-free').classList.contains('active'),
                 prices: document.getElementById('f-prices').classList.contains('active'),
-                commute: document.getElementById('f-commute').classList.contains('active')
+                commute: document.getElementById('f-commute').classList.contains('active'),
+                commuteMode
             };
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
         }
@@ -408,6 +412,8 @@
                 else document.getElementById('f-prices').classList.remove('active');
                 if (state.commute) document.getElementById('f-commute').classList.add('active');
                 else document.getElementById('f-commute').classList.remove('active');
+                if (state.commuteMode === 'car' || state.commuteMode === 'public') commuteMode = state.commuteMode;
+                updateCommuteModeButtons();
             } catch(e) {}
         }
 
@@ -503,6 +509,51 @@
         let commuteActive = false;
         let commuteAbort = null;
         let pickMode = false;
+        let commuteMode = 'public';
+
+        function updateCommuteModeButtons() {
+            const isPublic = commuteMode === 'public';
+            const publicBtn = document.getElementById('mode-public-btn');
+            const carBtn = document.getElementById('mode-car-btn');
+            publicBtn.style.background = isPublic ? '#2980b9' : 'white';
+            publicBtn.style.color = isPublic ? 'white' : '#2980b9';
+            carBtn.style.background = isPublic ? 'white' : '#2980b9';
+            carBtn.style.color = isPublic ? '#2980b9' : 'white';
+            document.getElementById('commute-legend-title').textContent = (isPublic ? '🚇 Public transport' : '🚗 Car') + ' from origin:';
+        }
+
+        function setCommuteMode(mode) {
+            if (mode !== 'public' && mode !== 'car') return;
+            if (commuteMode === mode) return;
+            commuteMode = mode;
+            updateCommuteModeButtons();
+            saveFilters();
+            if (commuteActive && commuteOrigin) {
+                if (commuteAbort) commuteAbort.abort();
+                hideCommuteRings();
+                fetchCommuteTimes(commuteOrigin[0], commuteOrigin[1]);
+            }
+        }
+
+        function getCommuteApiUrl(originLat, originLng, schoolLat, schoolLng) {
+            if (commuteMode === 'car') {
+                return 'https://router.project-osrm.org/route/v1/driving/' + originLng + ',' + originLat + ';' + schoolLng + ',' + schoolLat + '?overview=false';
+            }
+            return 'https://api.tfl.gov.uk/Journey/JourneyResults/' + originLat + ',' + originLng + '/to/' + schoolLat + ',' + schoolLng + '?mode=tube,bus,overground,dlr,elizabeth-line,tram,national-rail&date=' + getNextMonday() + '&time=0815&timeIs=departing';
+        }
+
+        function getCommuteMinutes(data) {
+            if (commuteMode === 'car') {
+                if (data.routes && data.routes.length > 0 && typeof data.routes[0].duration === 'number') {
+                    return Math.round(data.routes[0].duration / 60);
+                }
+                return null;
+            }
+            if (data.journeys && data.journeys.length > 0 && typeof data.journeys[0].duration === 'number') {
+                return data.journeys[0].duration;
+            }
+            return null;
+        }
 
         function commuteColor(minutes) {
             const min = 10, max = 65;
@@ -527,7 +578,7 @@
             const controller = new AbortController();
             commuteAbort = controller;
             const statusEl = document.getElementById('commute-status');
-            statusEl.textContent = 'Loading 0/' + visible.length + '...';
+            statusEl.textContent = 'Loading ' + (commuteMode === 'car' ? '🚗' : '🚇') + ' 0/' + visible.length + '...';
             statusEl.style.display = '';
             let done = 0;
             const batchSize = 5;
@@ -536,12 +587,12 @@
                 const batch = visible.slice(i, i + batchSize);
                 await Promise.all(batch.map(async (s) => {
                     try {
-                        const url = 'https://api.tfl.gov.uk/Journey/JourneyResults/' + originLat + ',' + originLng + '/to/' + s.lat + ',' + s.lng + '?mode=tube,bus,overground,dlr,elizabeth-line,tram,national-rail&date=' + getNextMonday() + '&time=0815&timeIs=departing';
+                        const url = getCommuteApiUrl(originLat, originLng, s.lat, s.lng);
                         const resp = await fetch(url, { signal: controller.signal });
                         if (!resp.ok) return;
                         const data = await resp.json();
-                        if (data.journeys && data.journeys.length > 0) {
-                            const mins = data.journeys[0].duration;
+                        const mins = getCommuteMinutes(data);
+                        if (mins !== null) {
                             schoolCommute[s.name] = mins;
                             const ring = L.circleMarker([s.lat, s.lng], {
                                 radius: 15, fillColor: 'transparent', color: commuteColor(mins),
@@ -551,10 +602,10 @@
                         }
                     } catch(e) {}
                     done++;
-                    statusEl.textContent = 'Loading ' + done + '/' + visible.length + '...';
+                    statusEl.textContent = 'Loading ' + (commuteMode === 'car' ? '🚗' : '🚇') + ' ' + done + '/' + visible.length + '...';
                 }));
             }
-            statusEl.textContent = '✅ ' + done + ' schools';
+            statusEl.textContent = '✅ ' + (commuteMode === 'car' ? '🚗 Car' : '🚇 Public transport') + ': ' + done + ' schools';
             setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
         }
 
@@ -592,6 +643,12 @@
         }
 
         // Pick mode toggle
+        document.getElementById('mode-public-btn').addEventListener('click', function() {
+            setCommuteMode('public');
+        });
+        document.getElementById('mode-car-btn').addEventListener('click', function() {
+            setCommuteMode('car');
+        });
         document.getElementById('pick-origin-btn').addEventListener('click', function() {
             pickMode = !pickMode;
             this.style.background = pickMode ? '#2980b9' : 'white';
@@ -671,6 +728,7 @@
             localStorage.removeItem(STORAGE_KEY);
             localStorage.setItem('schools-map-v2', '1');
         }
+        updateCommuteModeButtons();
         loadFilters();
         updateAll();
         const allCoords = schools.map(s => [s.lat, s.lng]);
